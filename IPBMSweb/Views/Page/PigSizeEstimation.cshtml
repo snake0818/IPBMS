@@ -1,0 +1,156 @@
+﻿@{
+    var pageName = "豬隻大小評估";
+    ViewData["Title"] = pageName;
+}
+
+<section>
+    <div class="p-3 rounded">
+        <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻大小評估</h2>
+
+        <!-- @* 條件選擇 *@ -->
+        <div id="Condition_Selection_Step" class="step">
+            <link rel="stylesheet" href="~/css/custom_select.css">
+            <script src="~/js/lib/custom_select.js"></script>
+            <!-- 選擇待辨識媒體 -->
+            <div id="select" class="custom-select mode">
+                <div class="select-box" data-selected="">
+                    <span>點選媒體選項</span>
+                </div>
+                <div class="select-options"></div>
+            </div>
+            <!-- 選擇欲查詢記錄 -->
+            <div id="search" class="custom-select">
+                <div class="select-box" data-selected="">
+                    <span>點選記錄選項</span>
+                </div>
+                <div class="select-options"></div>
+            </div>
+            <div id="btn-control">
+                <button id="submit" type="submit" onclick="confirm()">執行</button>
+                <button id="mode-toggle" type="button" onclick="toggleMode(this)">查詢模式</button>
+                <script>
+                    function toggleMode(target) {
+                        const stepElement = target.closest(".step");
+                        const selected = stepElement.querySelector(".mode .select-box");
+                        const selectElements = stepElement.querySelectorAll(".custom-select");
+                        selectElements.forEach(element => element.classList.toggle("mode"));
+                        const modeToggleBtn = document.getElementById("mode-toggle");
+                        if (selectElements[0].classList.contains("mode")) {
+                            modeToggleBtn.innerText = "查詢模式";
+                            selected.textContent = "點選記錄選項";
+                        }
+                        else {
+                            modeToggleBtn.innerText = "選擇模式";
+                            selected.textContent = "點選媒體選項";
+                        }
+                        selected.dataset.selected = '';
+                        setCondition();
+                    }
+                </script>
+            </div>
+        </div>
+
+        <!-- @* 結果呈現 *@ -->
+        <div id="Result_Record_Show_Step" class="step visually-hidden">
+            <!-- 結果展示 -->
+            <div id="Preview" class="row mb-3">
+                <!-- 原始圖像 -->
+                @* <div class="col-lg-6">
+                    <h3 class="fw-bold">原始圖片</h3>
+                    <div class="d-flex justify-content-center">
+                        <img id="sourcePreview" class="preview-img active d-none visually-hidden" style="display: none;"
+                            src="" alt="原圖預覽">
+                    </div>
+                </div> *@
+                <!-- 估測結果圖片 -->
+                <div class="col-md-8">
+                    <!-- 結果選單 -->
+                    <div class="form-group d-flex align-items-center mb-2" style="white-space: nowrap;">
+                        <h3 class="fw-bold m-0">辨識結果圖片 </h3>
+                        <select id="resultSelect" class="form-control" onchange="showResultImage(this)">
+                            <option value="1">辨識結果</option>
+                            <option value="2">深度圖</option>
+                        </select>
+                    </div>
+                    <div id="resultPreviewContainer" class="d-flex flex-wrap justify-content-center">
+                        <img id="resultPreview1" class="preview-img" src="" alt="辨識結果">
+                        <img id="resultPreview2" class="preview-img" src="" alt="深度圖">
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-center" id="pigEstimateInfo">
+                </div>
+
+                <style>
+                    .record-container span{
+                        color: #007BFF;
+                    }
+                    .keypoint{
+                        margin-left: 3rem;
+                        font-size: 24px;
+                    }
+                    .preview-img {
+                        display: none;
+                    }
+
+                    .preview-img.active {
+                        display: block;
+                    }
+                </style>
+                <script>
+                    // 顯示選中的結果圖片
+                    function showResultImage(select) {
+                        // 隱藏所有結果圖片
+                        let images = document.querySelectorAll('#resultPreview1, #resultPreview2, #resultPreview3');
+                        images.forEach(img => img.classList.remove('active'));
+
+                        // 根據選擇的結果圖片顯示對應圖片
+                        let selectedImage = document.querySelector(`#resultPreview${select.value}`);
+                        if (selectedImage) {
+                            selectedImage.classList.add('active');
+                        }
+                    }
+                    // 頁面加載時初始化顯示第一張結果圖片
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // 顯示第一個結果圖片
+                        showResultImage(document.getElementById('resultSelect'));
+                    });
+                </script>
+            </div>
+            <!-- 豬隻紀錄清單 -->
+            @* <div id="resultList" class="mb-3">
+                <h3 class="fw-bold">辨識含豬耳、鼻的估測記錄清單</h3>
+                <!-- 資訊卡滾動區域 -->
+                <div class="scroll-preview-cards-container overflow-x-scroll">
+                    <!-- 資訊卡區域 -->
+                    <div class="card-container">
+                        <!-- 資訊卡清單 -->
+                        <ul id="pigEstimateList" class="card-preview-list"></ul>
+                    </div>
+                </div>
+                <script src="~/js/lib/scroll.js"></script>
+                <link rel="stylesheet" href="~/css/scroll_preview_card.css">
+                <link rel="stylesheet" href="~/css/subpage.css">
+            </div> *@
+        </div>
+
+        <!-- @* 錯誤提示文字 *@ -->
+        <div id="msg" class="text-center fs-3" style="color:red;"></div>
+
+        <!-- @* 方法載入 *@ -->
+        <script type="module">
+            const errorMsg = document.getElementById("msg");
+            const Views = {
+            @* source: document.querySelector("#sourcePreview"), *@
+                target: document.querySelector("#resultPreviewContainer"),
+                result: document.querySelector("#pigEstimateInfo"),
+                prefix: document.querySelector("#Condition_Selection_Step"),
+                suffix: document.querySelector("#Result_Record_Show_Step"),
+            };
+            import * as Service from '@Url.Content("~/js/Services.js")';
+            await Service.initialize("ESTIMATE", Views, errorMsg); // 初始化載入必要資訊
+            window.setCondition = Service.setConditionQuery;
+            Service.RecordParam() ?? (window.confirm = () => Service.ServiceModeExcute());
+        </script>
+
+    </div>
+</section>
