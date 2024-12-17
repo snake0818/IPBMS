@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "dG3jAGVuDyF2LpWBjTGb4cqDTxtZPpOZcX7t0uMRK4o=",
+  "Hash": "m4n227LcqxMhz29lj+zp8YRFyOnsmaigSqjotThiHik=",
   "Source": "IPBMSweb",
   "BasePath": "_content/IPBMSweb",
   "Mode": "Default",
@@ -205,6 +205,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "D:\\WORK\\IPBMSweb\\wwwroot\\Gif38.gif",
+      "SourceId": "IPBMSweb",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\WORK\\IPBMSweb\\wwwroot\\",
+      "BasePath": "_content/IPBMSweb",
+      "RelativePath": "Gif38.gif",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Gif38.gif"
     },
     {
       "Identity": "D:\\WORK\\IPBMSweb\\wwwroot\\GitHub.svg",
@@ -1535,25 +1554,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
-    },
-    {
-      "Identity": "D:\\WORK\\IPBMSweb\\wwwroot\\out - Compressed with FlexClip (1).gif",
-      "SourceId": "IPBMSweb",
-      "SourceType": "Discovered",
-      "ContentRoot": "D:\\WORK\\IPBMSweb\\wwwroot\\",
-      "BasePath": "_content/IPBMSweb",
-      "RelativePath": "out - Compressed with FlexClip (1).gif",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\out - Compressed with FlexClip (1).gif"
     }
   ]
 }

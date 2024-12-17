@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IPBMSweb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+234909bf77e3a9573015c8f697419e2dfc5d66f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d9027be4e7d861c8098032cbf6e02e6257482c4")]
 [assembly: System.Reflection.AssemblyProductAttribute("IPBMSweb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IPBMSweb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -159,7 +159,8 @@ async function eventSSE(url) {
 
   // 插入即時辨識影像串流元素
   sLib.removeElement(target, "#waitting");
-  const streamURL = `${sLib.API_URL}/Tracking/Streaming`
+  // 串流辨識進度影像
+  const streamURL = `${sLib.API_URL}/Tracking/Streaming`;
   const streamElementHTML = `<img id="video-stream" src="${streamURL}" alt="即時影像串流" style="max-width: 100%; border: 1px solid #000;"></img>`;
   target.insertAdjacentHTML("beforeend", streamElementHTML);
   const streamElement = document.getElementById("video-stream");

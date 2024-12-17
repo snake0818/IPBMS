@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\IPBMSweb.bundle.scp.css"
     },
     {
+      "Id": "D:\\WORK\\IPBMSweb\\wwwroot\\Gif38.gif",
+      "PackagePath": "staticwebassets\\Gif38.gif"
+    },
+    {
       "Id": "D:\\WORK\\IPBMSweb\\wwwroot\\GitHub.svg",
       "PackagePath": "staticwebassets\\GitHub.svg"
     },
@@ -315,10 +319,6 @@
     {
       "Id": "D:\\WORK\\IPBMSweb\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
-    },
-    {
-      "Id": "D:\\WORK\\IPBMSweb\\wwwroot\\out - Compressed with FlexClip (1).gif",
-      "PackagePath": "staticwebassets\\out - Compressed with FlexClip (1).gif"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.IPBMSweb.Microsoft.AspNetCore.StaticWebAssets.props",

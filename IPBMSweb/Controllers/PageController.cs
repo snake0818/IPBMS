@@ -29,6 +29,10 @@ namespace IPBMSweb.Controllers
         [Route("/Service/PigActivityTracking")]
         public IActionResult Tracking() { return View("PigActivityTracking"); }
 
+        [HttpGet]
+        [Route("/ToBeContinue")]
+        public IActionResult ToBeContinue() { return View("ToBeContinue"); }
+
         #region 錯誤處理
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error() { return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }); }
