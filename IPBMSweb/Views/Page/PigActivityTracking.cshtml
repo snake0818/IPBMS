@@ -5,7 +5,7 @@
 
 <section>
     <div class="p-3 rounded">
-        <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻追蹤檢測</h2>
+        <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻活動追蹤</h2>
 
         <!-- @* 條件選擇 介面 *@ -->
         <div id="Condition_Selection_Step" class="step">
@@ -53,22 +53,22 @@
         <!-- @* 結果呈現 介面 *@ -->
         <div id="Result_Record_Show_Step" class="step row visually-hidden">
             <!-- 結果展示 
-        <div id="sourcePreview" class="col-lg-6 pb-3" style="min-height: 200px;">
-          <h3 class="fw-bold" for="SourceVideo">原始影片:</h3>
-          <video id="SourceVideo" width="100%" controls style="display:none;">
-            <source id="uploadedSource" type="video/mp4" />
-            您的瀏覽器不支援 HTML5 影片。
-          </video>
-        </div> -->
+            <div id="sourcePreview" class="col-lg-6 pb-3" style="min-height: 200px;">
+            <h3 class="fw-bold" for="SourceVideo">原始影片:</h3>
+            <video id="SourceVideo" width="100%" controls style="display:none;">
+                <source id="uploadedSource" type="video/mp4" />
+                您的瀏覽器不支援 HTML5 影片。
+            </video>
+            </div> -->
             <div id="resultPreview" class="col-lg-7 pb-3">
-                <h3 class="fw-bold" for="videoFile">追蹤檢測影片:</h3>
+                <h3 class="fw-bold" for="videoFile">活動追蹤結果影片:</h3>
                 <video id="TrackingVideo" class="d-none visually-hidden" style="display:none;" width="100%" controls>
                     <source id="TrackingSource" type="video/mp4" />
                     您的瀏覽器不支援 HTML5 影片。
                 </video>
             </div>
             <div id="resultView" class="col-lg-5 pb-3">
-                <h3 class="fw-bold" for="resultViewImg">追蹤檢測結果圖表:</h3>
+                <h3 class="fw-bold" for="resultViewImg">活動追蹤結果圖表:</h3>
                 <div class="col d-flex justify-content-center">
                     <img id="resultViewImg" class="d-block align-content-center h-100 w-100 d-none visually-hidden"
                         style="display:none;min-height: 200px;" src="" alt="結果圖表展示">
