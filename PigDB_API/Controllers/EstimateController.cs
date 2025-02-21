@@ -14,18 +14,28 @@ namespace PigDB_API.Controllers
         #region 建構
 
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
-        private readonly SettingService _setting;
+        private readonly IVariableService _variable;
+        private string _estimateDataFolderPath;
         private string _estimateImageFolderPath;
         private string _estimateDepthMapFolderPath;
-        private string _estimateDataFolderPath;
-        private string ModelUrl;
+        private string _modelUrl;
 
-        public EstimateController(PigDBContext database, SettingService settings)
+        public EstimateController(PigDBContext database, IVariableService variables)
         {
             _context = database;
-            _setting = settings;
-            (_estimateImageFolderPath, _estimateDataFolderPath, _estimateDepthMapFolderPath) = ReloadBasePath();
-            ModelUrl = _setting.ModelUrl;
+            _variable = variables;
+
+            var controllerName = GetType().Name.Replace("Controller", "");
+            var BaseFolderPath = _variable.StatusSharedFolder ? _variable.SharedFolder_Path : _variable.LocalFolder_Path;
+            var folderPath = Path.Combine(BaseFolderPath, "Sources", controllerName);
+            _estimateDataFolderPath = Path.Combine(folderPath, "Data");
+            _estimateImageFolderPath = Path.Combine(folderPath, "Images");
+            _estimateDepthMapFolderPath = Path.Combine(folderPath, "DepthMap");
+            Shared.EnsurePathExists(_estimateDataFolderPath);
+            Shared.EnsurePathExists(_estimateImageFolderPath);
+            Shared.EnsurePathExists(_estimateDepthMapFolderPath);
+
+            _modelUrl = _variable.Model_URL;
         }
 
         #endregion
@@ -35,13 +45,10 @@ namespace PigDB_API.Controllers
         [Route("{Image_id}")]
         public async Task<IActionResult> GetEstimateService(int Image_id)
         {
-            if (await _setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-            if (ModelUrl == "|") return BadRequest(new { error = "模型端連接失敗!" });
-
             try
             {
                 using HttpClient client = new();
-                var response = await client.GetAsync($"{ModelUrl}estimate/{Image_id}");
+                var response = await client.GetAsync($"{_modelUrl}estimate/{Image_id}");
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadAsStringAsync();
                 return Ok(result);
@@ -49,11 +56,11 @@ namespace PigDB_API.Controllers
             // 捕獲異常並返回錯誤信息
             catch (HttpRequestException httpEx)
             {
-                return StatusCode(501, $"模型服務請求錯誤: {httpEx.Message}");
+                return StatusCode(501, $"模型服務請求時發生錯誤，錯誤訊息: {httpEx.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(502, $"執行估測服務時發生錯誤: {ex.Message}");
+                return StatusCode(502, $"執行估測服務時發生錯誤，錯誤訊息: {ex.Message}");
             }
         }
         #endregion
@@ -68,7 +75,7 @@ namespace PigDB_API.Controllers
                 var records = await _context.EstimateRecords
                     .Select(r => new { r.Id, r.ImageId, r.Timestamp, })
                     .ToListAsync();
-                if (records == null || records.Count == 0) { return NotFound("尚未有任何估算紀錄資訊!"); };
+                if (records == null || records.Count == 0) return NotFound("尚未有任何估算紀錄資訊!");
                 return Ok(records);
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -84,18 +91,9 @@ namespace PigDB_API.Controllers
             try
             {
                 var record = await _context.EstimateRecords
-                    .Select(r => new
-                    {
-                        r.Id,
-                        r.ImageId,
-                        // PigRecords = _context.Pigs
-                        //     .Where(r => r.RecordId == Record_id)
-                        //     .Select(r => r.Id)
-                        //     .ToList(),
-                        // r.Timestamp,
-                    })
+                    .Select(r => new { r.Id, r.ImageId, })
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估測結果紀錄不存在!"); };
+                if (record == null) return NotFound("該估測結果紀錄不存在!");
                 return Ok(record);
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -122,10 +120,6 @@ namespace PigDB_API.Controllers
 
             try
             {
-                // 更新路徑設置
-                if (_setting.ReloadBaseConnect())
-                    (_estimateImageFolderPath, _estimateDataFolderPath, _estimateDepthMapFolderPath) = ReloadBasePath();
-
                 // 儲存檔案
                 string ImageFilePath = await Shared.CopyFileStream(ImageFile, _estimateImageFolderPath);
                 string DepthMapFilePath = await Shared.CopyFileStream(DepthMapFile, _estimateDepthMapFolderPath);
@@ -159,7 +153,7 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.EstimateRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估測紀錄結果不存在!"); };
+                if (record == null) return NotFound("該估測紀錄結果不存在!");
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -176,7 +170,7 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.EstimateRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估測紀錄結果不存在!"); };
+                if (record == null) return NotFound("該估測紀錄結果不存在!");
                 return PhysicalFile(record.DepthMapPath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -193,30 +187,12 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.EstimateRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該估測紀錄結果資訊不存在!"); };
+                if (record == null) return NotFound("該估測紀錄結果資訊不存在!");
                 return PhysicalFile(record.DataPath, "application/json");
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得紀錄資料時發生錯誤: {ex.Message}"); }
         }
-        #endregion
-
-        #region 方法
-
-        // 更新儲存路徑
-        private (string, string, string) ReloadBasePath()
-        {
-            string BasePATH = _setting.BasePath;
-            var controllerName = GetType().Name.Replace("Controller", "");
-            var estimateImageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
-            var estimateDataFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Data");
-            var estimateDepthMapFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "DepthMap");
-            Shared.EnsurePathExists(estimateImageFolderPath);
-            Shared.EnsurePathExists(estimateDataFolderPath);
-            Shared.EnsurePathExists(estimateDepthMapFolderPath);
-            return (estimateImageFolderPath, estimateDataFolderPath, estimateDepthMapFolderPath);
-        }
-
         #endregion
 
     }

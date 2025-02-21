@@ -29,10 +29,10 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 builder.Services.AddDbContext<PigDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// builder.Services.AddTransient<SettingService>();
-// builder.Services.AddScoped<SettingService>();
-builder.Services.AddSingleton<SettingService>();
-
+// 註冊各服務
+builder.Services.AddSingleton<IVariableService, VariableService>();
+builder.Services.AddSingleton<IValidatorService, ValidatorService>();
+builder.Services.AddSwaggerGen();
 var app = builder.Build();
 app.UseCors(CorsPolicyName);
 

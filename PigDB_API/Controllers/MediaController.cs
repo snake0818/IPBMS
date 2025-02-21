@@ -14,15 +14,22 @@ namespace PigDB_API.Controllers
         #region 建構
 
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
-        private readonly SettingService _setting;
+        private readonly IVariableService _variable;
         private readonly string _imageFolderPath;
         private readonly string _videoFolderPath;
 
-        public MediaController(PigDBContext database, SettingService settings)
+        public MediaController(PigDBContext database, IVariableService variables)
         {
             _context = database;
-            _setting = settings;
-            (_imageFolderPath, _videoFolderPath) = ReloadBasePath();
+            _variable = variables;
+
+            var controllerName = GetType().Name.Replace("Controller", "");
+            var BaseFolderPath = _variable.StatusSharedFolder ? _variable.SharedFolder_Path : _variable.LocalFolder_Path;
+            var folderPath = Path.Combine(BaseFolderPath, "Sources", controllerName);
+            _imageFolderPath = Path.Combine(folderPath, "Images");
+            _videoFolderPath = Path.Combine(folderPath, "Videos");
+            Shared.EnsurePathExists(_imageFolderPath);
+            Shared.EnsurePathExists(_videoFolderPath);
         }
 
         #endregion
@@ -85,7 +92,7 @@ namespace PigDB_API.Controllers
             {
                 // 查詢資料庫中的圖片記錄
                 var record = await _context.Images.FirstOrDefaultAsync(f => f.Id == Image_id);
-                if (record == null) { return NotFound("該圖片不存在!"); };
+                if (record == null) return NotFound("該圖片不存在!");
                 return PhysicalFile(record.FilePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -153,8 +160,7 @@ namespace PigDB_API.Controllers
             {
                 // 查詢資料庫中的影片記錄
                 var record = await _context.Videos.FirstOrDefaultAsync(f => f.Id == Video_id);
-                if (record == null) { return NotFound("影片不存在!"); };
-
+                if (record == null) return NotFound("影片不存在!");
                 // 回傳影片串流
                 return Shared.StreamVideo(record.FilePath);
             }
@@ -163,103 +169,5 @@ namespace PigDB_API.Controllers
         }
         #endregion
         #endregion
-
-        #region 方法
-
-        // 更新儲存路徑
-        private (string, string) ReloadBasePath()
-        {
-            _setting.ReloadBaseConnect();
-            string BasePATH = _setting.BasePath;
-            var controllerName = GetType().Name.Replace("Controller", "");
-            var imageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
-            var videoFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Videos");
-            Shared.EnsurePathExists(imageFolderPath);
-            Shared.EnsurePathExists(videoFolderPath);
-            return (imageFolderPath, videoFolderPath);
-        }
-
-        #endregion
-
-        // 20241016 嘗試整合媒體方法
-        // #region 上傳檔案 (圖片/影片)
-        // [HttpPost("{type}")]
-        // [Consumes("multipart/form-data")]
-        // public async Task<IActionResult> UploadMedia(string type, IFormFile file)
-        // {
-        //     if (file == null || file.Length == 0) return BadRequest("沒有檔案被上傳!");
-
-        //     try
-        //     {
-        //         string folderPath = GetFolderPath(type);
-        //         if (folderPath == null) return BadRequest("無效的媒體類型!");
-
-        //         string filePath = await Shared.CopyFileStream(file, folderPath);
-
-        //         var mediaRecord = CreateMediaRecord(type, filePath);
-        //         _context.Add(mediaRecord);
-        //         await _context.SaveChangesAsync();
-
-        //         return Ok(new { Message = $"{type} 上傳成功!", MediaId = mediaRecord.Id });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, $"上傳過程中發生錯誤: {ex.Message}");
-        //     }
-        // }
-        // #endregion
-
-        // #region 取得檔案 (圖片/影片)
-        // [HttpGet("{type}/{id}")]
-        // public async Task<IActionResult> GetMedia(string type, int id)
-        // {
-        //     try
-        //     {
-        //         var record = await FindMediaRecordAsync(type, id);
-        //         if (record == null) return NotFound($"{type} 不存在!");
-
-        //         return type.ToLower() == "image"
-        //             ? PhysicalFile(record.FilePath, "image/jpeg")
-        //             : Shared.StreamVideo(record.FilePath);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return StatusCode(500, $"讀取過程中發生錯誤: {ex.Message}");
-        //     }
-        // }
-        // #endregion
-
-        // #region 私有方法
-        // private string? GetFolderPath(string type)
-        // {
-        //     return type.ToLower() switch
-        //     {
-        //         "image" => _imageFolderPath,
-        //         "video" => _videoFolderPath,
-        //         _ => null
-        //     };
-        // }
-
-        // private static object CreateMediaRecord(string type, string filePath)
-        // {
-        //     return type.ToLower() switch
-        //     {
-        //         "image" => new Image { FilePath = filePath, Timestamp = Shared.UnixTime() },
-        //         "video" => new Video { FilePath = filePath, Timestamp = Shared.UnixTime() },
-        //         _ => throw new ArgumentException("無效的媒體類型!")
-        //     };
-        // }
-
-        // private async Task<dynamic?> FindMediaRecordAsync(string type, int id)
-        // {
-        //     return type.ToLower() switch
-        //     {
-        //         "image" => await _context.Images.FirstOrDefaultAsync(f => f.Id == id),
-        //         "video" => await _context.Videos.FirstOrDefaultAsync(f => f.Id == id),
-        //         _ => null
-        //     };
-        // }
-        // #endregion
-
     }
 }

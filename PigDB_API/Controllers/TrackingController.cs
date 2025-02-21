@@ -14,18 +14,28 @@ namespace PigDB_API.Controllers
         #region 建構
 
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
-        private readonly SettingService _setting;
-        private string _imageFolderPath;
-        private string _videoFolderPath;
-        private string _dataFolderPath;
-        private string ModelUrl;
+        private readonly IVariableService _variable;
+        private string _trackingDataFolderPath;
+        private string _trackingImageFolderPath;
+        private string _trackingVideoFolderPath;
+        private string _modelUrl;
 
-        public TrackingController(PigDBContext database, SettingService settings)
+        public TrackingController(PigDBContext database, IVariableService variables)
         {
             _context = database;
-            _setting = settings;
-            (_imageFolderPath, _videoFolderPath, _dataFolderPath) = ReloadBasePath();
-            ModelUrl = _setting.ModelUrl;
+            _variable = variables;
+
+            var controllerName = GetType().Name.Replace("Controller", "");
+            var BaseFolderPath = _variable.StatusSharedFolder ? _variable.SharedFolder_Path : _variable.LocalFolder_Path;
+            var folderPath = Path.Combine(BaseFolderPath, "Sources", controllerName);
+            _trackingDataFolderPath = Path.Combine(folderPath, "Data");
+            _trackingImageFolderPath = Path.Combine(folderPath, "Images");
+            _trackingVideoFolderPath = Path.Combine(folderPath, "Videos");
+            Shared.EnsurePathExists(_trackingDataFolderPath);
+            Shared.EnsurePathExists(_trackingImageFolderPath);
+            Shared.EnsurePathExists(_trackingVideoFolderPath);
+
+            _modelUrl = _variable.Model_URL;
         }
         #endregion
 
@@ -34,14 +44,6 @@ namespace PigDB_API.Controllers
         [Route("{Video_id}")]
         public async Task GetTrackingService(int Video_id)
         {
-            if (await _setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-            if (ModelUrl == "|")
-            {
-                Response.StatusCode = StatusCodes.Status400BadRequest;
-                await Response.WriteAsync("模型端連接失敗!");
-                return;
-            }
-
             // 設定 SSE 標頭
             Response.Headers.Append("Content-Type", "text/event-stream; charset=utf-8");
             Response.Headers.Append("Cache-Control", "no-cache");
@@ -53,7 +55,7 @@ namespace PigDB_API.Controllers
 
             try
             {
-                var response = await client.GetAsync($"{ModelUrl}tracking/{Video_id}", HttpCompletionOption.ResponseHeadersRead);
+                var response = await client.GetAsync($"{_modelUrl}tracking/{Video_id}", HttpCompletionOption.ResponseHeadersRead);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -98,17 +100,8 @@ namespace PigDB_API.Controllers
         [HttpGet]
         public async Task ForwardVideoStream()
         {
-            Response.ContentType = "text/plain; charset=utf-8";
-            if (await _setting.ReloadModelConnect()) ModelUrl = _setting.ModelUrl;
-            if (ModelUrl == "|")
-            {
-                Response.StatusCode = StatusCodes.Status400BadRequest;
-                await Response.WriteAsync("模型端連接失敗!");
-                return;
-            }
-
             using var httpClient = new HttpClient();
-            var response = await httpClient.GetAsync($"{ModelUrl}/video_stream", HttpCompletionOption.ResponseHeadersRead);
+            var response = await httpClient.GetAsync($"{_modelUrl}/video_stream", HttpCompletionOption.ResponseHeadersRead);
 
             // 檢查是否成功，若無內容則回傳提示訊息
             if (!response.IsSuccessStatusCode)
@@ -119,6 +112,7 @@ namespace PigDB_API.Controllers
             }
 
             // 設定回應的內容類型
+            Response.ContentType = "text/plain; charset=utf-8";
             Response.ContentType = "multipart/x-mixed-replace; boundary=frame";
 
             // 讀取串流並將內容寫回給客戶端
@@ -146,7 +140,7 @@ namespace PigDB_API.Controllers
                 var records = await _context.TrackingRecords
                     .Select(r => new { r.Id, r.VideoId, r.Timestamp, })
                     .ToListAsync();
-                if (records == null || records.Count == 0) { return NotFound("尚未有任何追蹤檢測紀錄資訊!"); };
+                if (records == null || records.Count == 0) return NotFound("尚未有任何追蹤檢測紀錄資訊!");
                 return Ok(records);
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -164,7 +158,7 @@ namespace PigDB_API.Controllers
                 var record = await _context.TrackingRecords
                     .Select(r => new { r.Id, r.VideoId, r.Timestamp, })
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤結果紀錄不存在!"); };
+                if (record == null) return NotFound("該追蹤結果紀錄不存在!");
                 return Ok(record);
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -188,14 +182,10 @@ namespace PigDB_API.Controllers
 
             try
             {
-                // 更新路徑設置
-                if (_setting.ReloadBaseConnect())
-                    (_imageFolderPath, _videoFolderPath, _dataFolderPath) = ReloadBasePath();
-
                 // 儲存檔案
-                string ImageFilePath = await Shared.CopyFileStream(ImageFile, _imageFolderPath);
-                string VideoFilePath = await Shared.CopyFileStream(VideoFile, _videoFolderPath);
-                string DataFilePath = await Shared.CopyFileStream(DataFile, _dataFolderPath);
+                string DataFilePath = await Shared.CopyFileStream(DataFile, _trackingDataFolderPath);
+                string ImageFilePath = await Shared.CopyFileStream(ImageFile, _trackingImageFolderPath);
+                string VideoFilePath = await Shared.CopyFileStream(VideoFile, _trackingVideoFolderPath);
 
                 // 儲存紀錄到資料庫
                 var newRecord = new TrackingRecord
@@ -225,7 +215,7 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.TrackingRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
+                if (record == null) return NotFound("該追蹤檢測結果不存在!");
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -242,8 +232,7 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.TrackingRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
-
+                if (record == null) return NotFound("該追蹤檢測結果不存在!");
                 // 回傳影片串流
                 return Shared.StreamVideo(record.VideoPath);
             }
@@ -261,32 +250,12 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.TrackingRecords
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
-                if (record == null) { return NotFound("該追蹤檢測結果不存在!"); };
+                if (record == null) return NotFound("該追蹤檢測結果不存在!");
                 return PhysicalFile(record.DataPath, "application/json");
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得紀錄數據時發生錯誤: {ex.Message}"); }
         }
         #endregion
-
-        #region 方法
-
-        // 更新儲存路徑
-        private (string, string, string) ReloadBasePath()
-        {
-            _setting.ReloadBaseConnect();
-            string BasePATH = _setting.BasePath;
-            var controllerName = GetType().Name.Replace("Controller", "");
-            var imageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
-            var videoFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Videos");
-            var dataFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Data");
-            Shared.EnsurePathExists(imageFolderPath);
-            Shared.EnsurePathExists(videoFolderPath);
-            Shared.EnsurePathExists(dataFolderPath);
-            return (imageFolderPath, videoFolderPath, dataFolderPath);
-        }
-
-        #endregion
-
     }
 }

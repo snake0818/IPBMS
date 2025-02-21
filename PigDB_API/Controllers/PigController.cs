@@ -14,15 +14,22 @@ namespace PigDB_API.Controllers
         #region 建構
 
         private readonly PigDBContext _context; // 宣告 PigDB 物件變數
-        private readonly SettingService _setting;
-        private string _pigImageFolderPath;
+        private readonly IVariableService _variable;
         private string _pigDatasFolderPath;
+        private string _pigImageFolderPath;
 
-        public PigController(PigDBContext database, SettingService settings)
+        public PigController(PigDBContext database, IVariableService variables)
         {
             _context = database;
-            _setting = settings;
-            (_pigImageFolderPath, _pigDatasFolderPath) = ReloadBasePath();
+            _variable = variables;
+
+            var controllerName = GetType().Name.Replace("Controller", "");
+            var BaseFolderPath = _variable.StatusSharedFolder ? _variable.SharedFolder_Path : _variable.LocalFolder_Path;
+            var folderPath = Path.Combine(BaseFolderPath, "Sources", controllerName);
+            _pigDatasFolderPath = Path.Combine(folderPath, "Data");
+            _pigImageFolderPath = Path.Combine(folderPath, "Images");
+            Shared.EnsurePathExists(_pigDatasFolderPath);
+            Shared.EnsurePathExists(_pigImageFolderPath);
         }
 
         #endregion
@@ -72,7 +79,7 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.Pigs
                     .FirstOrDefaultAsync(r => r.Id == Pig_id);
-                if (record == null) { return NotFound("該估算豬隻結果圖片不存在!"); };
+                if (record == null) return NotFound("該估算豬隻結果圖片不存在!");
                 return PhysicalFile(record.ImagePath, "image/jpeg");
             }
             // 捕捉例外並回傳 500 狀態碼
@@ -89,29 +96,12 @@ namespace PigDB_API.Controllers
             {
                 var record = await _context.Pigs
                     .FirstOrDefaultAsync(r => r.Id == Pig_id);
-                if (record == null) { return NotFound("該估算豬隻結果資訊不存在!"); };
+                if (record == null) return NotFound("該估算豬隻結果資訊不存在!");
                 return PhysicalFile(record.DataPath, "application/json");
             }
             // 捕捉例外並回傳 500 狀態碼
             catch (Exception ex) { return StatusCode(500, $"取得紀錄資料時發生錯誤: {ex.Message}"); }
         }
         #endregion
-
-        #region 方法
-
-        // 更新儲存路徑
-        private (string, string) ReloadBasePath()
-        {
-            string BasePATH = _setting.BasePath;
-            var controllerName = GetType().Name.Replace("Controller", "");
-            var annotationImageFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Images");
-            var annotationDatasFolderPath = Path.Combine(BasePATH, "Sources", controllerName, "Data");
-            Shared.EnsurePathExists(annotationImageFolderPath);
-            Shared.EnsurePathExists(annotationDatasFolderPath);
-            return (annotationImageFolderPath, annotationDatasFolderPath);
-        }
-
-        #endregion
-
     }
 }

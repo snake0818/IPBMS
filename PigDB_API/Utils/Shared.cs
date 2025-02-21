@@ -22,7 +22,7 @@ namespace PigDB_API.Utils
         // 當前 unix time
         public static long UnixTime()
         {
-            long unixtime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+            long unixtime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             return unixtime;
         }
 
