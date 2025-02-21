@@ -10,8 +10,24 @@ onSharedElementsUpdated((sharedElements) => {
 
 // ********** 豬隻追蹤辨識服務 ********** //
 // 豬場影像、追蹤記錄清單
-export async function getTrackingMediaList() { return await sLib.getResponse(`${sLib.API_URL}/Media/Video/List`); }
-export async function getTrackingRecordList() { return await sLib.getResponse(`${sLib.API_URL}/Tracking/List`); }
+export async function getTrackingMediaList() {
+  try {
+    return await sLib.getResponse(`${sLib.API_URL}/Media/Video/List`);
+  } catch (error) {
+    if (error.message.includes('404')) console.warn('無資料');
+    else if (error.message.includes('500')) console.warn('無法取得資料');
+    return [];
+  }
+}
+export async function getTrackingRecordList() {
+  try {
+    return await sLib.getResponse(`${sLib.API_URL}/Tracking/List`);
+  } catch (error) {
+    if (error.message.includes('404')) console.warn('無資料');
+    else if (error.message.includes('500')) console.warn('無法取得資料');
+    return [];
+  }
+}
 
 // 影片追蹤服務流程
 export async function TrackingExcute(videoId) {
@@ -19,7 +35,10 @@ export async function TrackingExcute(videoId) {
   try {
     switchAndWaittingResults();
 
+    const viewTitle = target.querySelector('h3');
+    viewTitle.textContent = '豬隻活動即時追蹤畫面:';
     // 執行追蹤服務，並啟動非同步串流影像與即時數據，等待回應記錄編號
+    sLib.updateWaittingMessage(suffix, '正在辨識影片，請稍候...');
     const recordId = await eventSSE(`${sLib.API_URL}/Tracking/${videoId}`);
     sLib.addParam('recordId', recordId); // 賦予記錄
     if (!recordId) {
@@ -28,6 +47,7 @@ export async function TrackingExcute(videoId) {
       throw new Error(ERRORMSG);
     }
 
+    viewTitle.textContent = '活動追蹤結果影片:';
     await TrackingExhibit(recordId, true);
   } catch (error) {
     console.error('豬隻活動追蹤服務執行時發生錯誤:', error);
@@ -50,7 +70,7 @@ export async function TrackingExhibit(recordId, afterExcute = null) {
       sLib.addParam('recordId', recordId); // 賦予記錄
       switchAndWaittingResults();
     }
-    
+
     const record = await sLib.getResponse(`${sLib.API_URL}/Tracking/Record/${recordId}`);
     const imageId = record.imageId;
 
@@ -58,23 +78,20 @@ export async function TrackingExhibit(recordId, afterExcute = null) {
     sLib.display(resultVideoElement);
 
     sLib.setImage(resultImgElement, `${sLib.API_URL}/Tracking/Image/${recordId}`, "追蹤結果圖片");
-    sLib.display(resultImgElement);
 
     // 追蹤結果數據
+    const OverviewContainer = suffix.querySelector('#trackingOverview');
+    updateValue(OverviewContainer, "#RecordId .value-item", recordId);
     if (!afterExcute) {
-      const resultDataContainer = suffix.querySelector('#resultInfo');
-      const OverviewContainer = resultDataContainer.querySelector('#trackingOverview');
-      const DataContainer = resultDataContainer.querySelector('#realTimeData .scrollable-container');
+      const DataContainer = suffix.querySelector('#resultInfo #realTimeData .scrollable-container');
       const data = await sLib.getResponse(`${sLib.API_URL}/Tracking/Data/${recordId}`);
       updatedOverview(OverviewContainer, data);
-      updateValue(OverviewContainer, "#RecordId .value-item", recordId);
       updatedData(DataContainer, data);
     }
   } catch (error) {
     console.error("豬隻活動追蹤記錄展示時發生錯誤:", error);
     errMsg.innerHTML = error;
     sLib.hidden(resultVideoElement);
-    sLib.hidden(resultImgElement);
     sLib.toggleView(prefix, suffix);
   }
   finally {
@@ -85,11 +102,11 @@ export async function TrackingExhibit(recordId, afterExcute = null) {
 const switchAndWaittingResults = () => {
   // 切換結果展示介面，並添加等待元素
   sLib.toggleView(suffix, prefix);
-  // sLib.addWaitting(suffix);
   // 各展示元素添加等待回應
-  sLib.addWaitting(target);
-  sLib.addWaitting(result);
-  const trackingInfoContainer = suffix.querySelector('#resultInfo');
+  // sLib.addWaitting(suffix);
+  // sLib.addWaitting(target);
+  // sLib.addWaitting(result);
+  const trackingInfoContainer = suffix.querySelector('#resultInfo').parentNode;
   sLib.addWaitting(trackingInfoContainer);
 }
 
@@ -101,16 +118,15 @@ const updateValue = (container, selectElement, value, transform = (v) => v) => {
 
 // 更新總覽資訊方法
 const updatedOverview = (overviewContainer, data) => {
-  sLib.display(overviewContainer);
   updateValue(overviewContainer, "#Frames #Total", data.video_total_frame);
   updateValue(overviewContainer, "#DateTime .value-item", data.record_start_time, (t) => new Date(t).toISOString().replace("T", " ").replace("Z", "").split(".")[0]);
   updateValue(overviewContainer, "#ModelVersion .value-item", data.tracking_accuracy.model_version);
 }
+
 // 更新數據資訊方法
 const updatedData = (dataContainer, data) => {
   if (Array.isArray(data.pigs)) {
     if (data.pigs.length > 0) {
-      sLib.display(dataContainer.parentNode);
       data.pigs.slice() // 複製數據
         .sort((a, b) => a.id - b.id) // 排序
         .forEach(pig => { // 處理各豬隻數據
@@ -134,9 +150,9 @@ const updatedData = (dataContainer, data) => {
             newPigContainer.id = `pig-${pigID}`;
             newPigContainer.className = "pig-card";
             newPigContainer.innerHTML = `
-          <div class="id">${pigID}</div>
+          <div class="item id">${pigID}</div>
           ${Object.entries(formatPigValues)
-                .map(([key, value]) => `<div class="${key}">${formatValue(value)}</div>`)
+                .map(([key, value]) => `<div class="item ${key}">${formatValue(value)}</div>`)
                 .join("")}
         `;
             dataContainer.appendChild(newPigContainer);
@@ -158,11 +174,9 @@ async function eventSSE(url) {
   const dataContainer = dataViewContainer.querySelector(".scrollable-container");
 
   // 插入即時辨識影像串流元素
-  sLib.removeElement(target, "#waitting");
-  // 串流辨識進度影像
   const streamURL = `${sLib.API_URL}/Tracking/Streaming`;
   const streamElementHTML = `<img id="video-stream" src="${streamURL}" alt="即時影像串流" style="max-width: 100%; border: 1px solid #000;"></img>`;
-  target.insertAdjacentHTML("beforeend", streamElementHTML);
+  target.querySelector('#trackingOverview').insertAdjacentHTML("beforebegin", streamElementHTML);
   const streamElement = document.getElementById("video-stream");
 
   return new Promise((resolve, reject) => { // Promise 封裝了 EventSource 的操作
@@ -172,6 +186,7 @@ async function eventSSE(url) {
       const data = JSON.parse(event.data); // 解析即時訊息與數據
 
       if (data && Object.keys(data).length > 0) {
+        sLib.removeElement(suffix, '#waitting');
         // 更新當前數據幀
         if (data.frame_count) overviewContainer.querySelector("#Frames #Current").innerText = data.frame_count;
 
@@ -186,9 +201,6 @@ async function eventSSE(url) {
           resolve(data.recordId); // 將 `recordId` 傳回 Promise
         }
         else { // 更新即時數據
-          const trackingInfoContainer = suffix.querySelector('#resultInfo');
-          sLib.removeElement(trackingInfoContainer, '#waitting');
-          sLib.display(overviewContainer);
           updatedData(dataContainer, data);
           updatedOverview(overviewContainer, data);
           updateValue(overviewContainer, "#AverageConfidence .value-item", data.tracking_accuracy.average_tracking_confidence, (v) => v.toFixed(2));
@@ -199,8 +211,6 @@ async function eventSSE(url) {
     eventSource.onerror = function (error) {
       console.error(`SSE 發生錯誤: ${url}`, error);
       if (streamElement && streamElement.parentNode) target.removeChild(streamElement); // 清除即時辨識影像串流元素
-      sLib.hidden(overviewContainer);
-      sLib.hidden(dataViewContainer);
       eventSource.close(); // 關閉 SSE 連線
       reject(new Error("SSE 發生錯誤")); // 拒絕 Promise
     };

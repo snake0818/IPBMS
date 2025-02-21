@@ -1,24 +1,30 @@
 var builder = WebApplication.CreateBuilder(args);
-var CorsPolicyName = "AllowAllPolicy";
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: CorsPolicyName,
+    options.AddPolicy(name: "AllowPolicy",
     builder =>
     {
         builder
-                .WithOrigins("http://140.137.41.136:15000/", "http://140.137.41.136:1380/IPBMS/OinkAPI/api")
-                // .AllowAnyOrigin()
+                // .WithOrigins("http://140.137.41.136:15000/", "http://140.137.41.136:1380/IPBMS/OinkAPI/api")
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
     });
 });
 
+var config = builder.Configuration;
+
+// 註冊各服務
+builder.Services.AddSingleton<IVariableService, VariableService>();
+builder.Services.AddSingleton<IValidatorService, ValidatorService>();
+
 var app = builder.Build();
-app.UseCors(CorsPolicyName);
+
+app.UseCors("AllowPolicy");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

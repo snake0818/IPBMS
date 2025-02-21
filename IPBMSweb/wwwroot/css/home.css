@@ -4,17 +4,19 @@
   margin: 0 auto;
 }
 
-#home-section{
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#demo-videos-show {
+  /* min-height: 450px; */
+  align-content: center;
+  margin-bottom: 1rem;
 }
 
-#demo-videos-show {
-  background: rgba(150, 150, 150, 0.8);
-  min-height: 450px;
-  align-content: center;
+#keyword-block{
+  display: flex;
+  flex-wrap: nowrap;
+  gap: .5rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: .5rem;
 }
 
 #keyword-block .btn-keyword {
@@ -22,7 +24,7 @@
   font-weight: bold;
   font-size: 14px;
   color: #fff;
-  background: #8315f9;
+  background: #0584f2;
 }
 
 @media (min-width: 1024px) {

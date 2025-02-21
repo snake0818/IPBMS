@@ -14,7 +14,17 @@ html {
 
 html {
   position: relative;
-  min-height: 100%;
+  min-height: 100vh;
+
+  /*** 禁用選取 ***/
+  /* Safari */
+  -webkit-user-select: none;
+  /* Firefox */
+  -moz-user-select: none;
+  /* Internet Explorer/Edge */
+  -ms-user-select: none;
+  /* 新的瀏覽器 */
+  user-select: none;
 }
 
 body {

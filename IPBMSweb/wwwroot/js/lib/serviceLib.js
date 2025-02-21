@@ -9,7 +9,7 @@ const waittingElement = `
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="fs-3">正在處理請求中...</div>
+        <div id="stageMessage" class="fs-3">正在處理請求中...</div>
       </div>            
     </div>
   </div>
@@ -33,6 +33,12 @@ export const addWaitting = (element) => {
     element.insertAdjacentHTML('beforeend', waittingElement);
 }
 
+export const updateWaittingMessage = (element, message) => {
+  const WaitEle = element.querySelector('#waitting');
+  if (WaitEle) WaitEle.querySelector('#stageMessage').textContent = message;
+  else console.warn('等待元素不存在，無法更新訊息。');
+}
+
 // 移除 element 中所有指定 tag 元素
 export const removeElement = (element, tag) => element.querySelectorAll(tag).forEach(e => e.remove());
 
@@ -44,7 +50,7 @@ export async function getResponse(url) {
     const response = await fetch(url, { method: "GET" });
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`錯誤：${response.status} - ${errorText}`);
+      throw new Error(`取得發生錯誤錯誤，錯誤碼：${response.status} - ${errorText}`);
     }
     const result = await response.json();
     return result;
@@ -60,7 +66,7 @@ export const setImage = (element, url, type) => {
   catch (error) {
     element.src = '';
     console.error(`取得${type}時發生錯誤:`, error);
-    return;
+    throw new Error(`取得${type}時發生錯誤!`)
   }
 }
 

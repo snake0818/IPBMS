@@ -1,6 +1,7 @@
 :root {
-  --global-background: rgba(242, 242, 242, .92);
-  --preview-image-size: 100px;
+  --global-background-color: 240, 190, 167;
+  --scrollbar-color: darkgrey;
+  --scrollbar-background-color: #f1f1f1;
 }
 
 /* ::-webkit-scrollbar {
@@ -15,31 +16,38 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
+  background-color: var(--scrollbar-color);
   border-radius: 10px;
-  border: 1px solid #f1f1f1;
+  border: 1px solid var(--scrollbar-background-color);
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-background-color);
 }
 
-main, body {
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: auto;
+  height: 100%;
+  padding: 5px;
+}
+
+.icon img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+}
+
+body {
   font-family: 'Times New Roman', '標楷體', serif;
-  background: rgba(230, 230, 230, 1);
+  background: rgba(var(--global-background-color), 0.92);
   margin: 0;
   padding: 0;
   min-height: 100%;
-
-  /*** 禁用選取 ***/
-  /* Safari */
-  -webkit-user-select: none;
-  /* Firefox */
-  -moz-user-select: none;
-  /* Internet Explorer/Edge */
-  -ms-user-select: none;
-  /* 新的瀏覽器 */
-  user-select: none;
 }
 
 ul,
@@ -64,7 +72,7 @@ h6 {
 }
 
 section {
-  background: rgba(230, 230, 230, 0.8);
+  /* background: rgba(var(--global-background-color), 0.8); */
   padding-top: 60px;
   display: block;
 }
@@ -73,7 +81,7 @@ p {
   font-size: x-large;
 }
 
-@media (min-width: 1600px) {
+/* @media (min-width: 1600px) {
   .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
       max-width: 1540px;
   }
@@ -82,4 +90,4 @@ p {
   .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
       max-width: 1720px;
   }
-}
+} */

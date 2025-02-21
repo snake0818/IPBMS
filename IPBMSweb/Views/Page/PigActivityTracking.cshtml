@@ -3,56 +3,55 @@
     ViewData["Title"] = pageName;
 }
 
-<section>
-    <div class="p-3 rounded">
-        <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻活動追蹤</h2>
+<section class="rounded">
+    <h2 class="bg-primary text-white rounded fw-bold text-center mb-3 py-1">豬隻活動追蹤</h2>
 
-        <!-- @* 條件選擇 介面 *@ -->
-        <div id="Condition_Selection_Step" class="step">
-            <link rel="stylesheet" href="~/css/custom_select.css">
-            <script src="~/js/lib/custom_select.js"></script>
-            <!-- 選擇待辨識媒體 -->
-            <div id="select" class="custom-select mode">
-                <div class="select-box" data-selected="">
-                    <span>點選媒體選項</span>
-                </div>
-                <div class="select-options"></div>
+    <!-- @* 條件選擇 介面 *@ -->
+    <div id="Condition_Selection_Step" class="step">
+        <link rel="stylesheet" href="~/css/custom_select.css">
+        <script src="~/js/lib/custom_select.js"></script>
+        <!-- 選擇待辨識媒體 -->
+        <div id="select" class="custom-select mode">
+            <div class="select-box" data-selected="">
+                <span>點選媒體選項</span>
             </div>
-            <!-- 選擇欲查詢記錄 -->
-            <div id="search" class="custom-select">
-                <div class="select-box" data-selected="">
-                    <span>點選記錄選項</span>
-                </div>
-                <div class="select-options"></div>
-            </div>
-            <div id="btn-control">
-                <button id="submit" type="submit" onclick="confirm()">執行</button>
-                <button id="mode-toggle" type="button" onclick="toggleMode(this)">查詢模式</button>
-                <script>
-                    function toggleMode(target) {
-                        const stepElement = target.closest(".step");
-                        const selected = stepElement.querySelector(".mode .select-box");
-                        const selectElements = stepElement.querySelectorAll(".custom-select");
-                        selectElements.forEach(element => element.classList.toggle("mode"));
-                        const modeToggleBtn = document.getElementById("mode-toggle");
-                        if (selectElements[0].classList.contains("mode")) {
-                            modeToggleBtn.innerText = "查詢模式";
-                            selected.textContent = "點選記錄選項";
-                        }
-                        else {
-                            modeToggleBtn.innerText = "選擇模式";
-                            selected.textContent = "點選媒體選項";
-                        }
-                        selected.dataset.selected = '';
-                        setCondition();
-                    }
-                </script>
-            </div>
+            <div class="select-options"></div>
         </div>
+        <!-- 選擇欲查詢記錄 -->
+        <div id="search" class="custom-select">
+            <div class="select-box" data-selected="">
+                <span>點選記錄選項</span>
+            </div>
+            <div class="select-options"></div>
+        </div>
+        <div id="btn-control">
+            <button id="submit" type="submit" onclick="confirm()">執行</button>
+            <button id="mode-toggle" type="button" onclick="toggleMode(this)">查詢模式</button>
+            <script>
+                function toggleMode(target) {
+                    const stepElement = target.closest(".step");
+                    const selected = stepElement.querySelector(".mode .select-box");
+                    const selectElements = stepElement.querySelectorAll(".custom-select");
+                    selectElements.forEach(element => element.classList.toggle("mode"));
+                    const modeToggleBtn = document.getElementById("mode-toggle");
+                    if (selectElements[0].classList.contains("mode")) {
+                        modeToggleBtn.innerText = "查詢模式";
+                        selected.textContent = "點選記錄選項";
+                    }
+                    else {
+                        modeToggleBtn.innerText = "選擇模式";
+                        selected.textContent = "點選媒體選項";
+                    }
+                    selected.dataset.selected = '';
+                    setCondition();
+                }
+            </script>
+        </div>
+    </div>
 
-        <!-- @* 結果呈現 介面 *@ -->
-        <div id="Result_Record_Show_Step" class="step row visually-hidden">
-            <!-- 結果展示 
+    <!-- @* 結果呈現 介面 *@ -->
+    <div id="Result_Record_Show_Step" class="step row visually-hidden" style="height: 80vh;">
+        <!-- 結果展示 
             <div id="sourcePreview" class="col-lg-6 pb-3" style="min-height: 200px;">
             <h3 class="fw-bold" for="SourceVideo">原始影片:</h3>
             <video id="SourceVideo" width="100%" controls style="display:none;">
@@ -60,69 +59,46 @@
                 您的瀏覽器不支援 HTML5 影片。
             </video>
             </div> -->
-            <div id="resultPreview" class="col-lg-7 pb-3">
-                <h3 class="fw-bold" for="videoFile">活動追蹤結果影片:</h3>
-                <video id="TrackingVideo" class="d-none visually-hidden" style="display:none;" width="100%" controls>
-                    <source id="TrackingSource" type="video/mp4" />
-                    您的瀏覽器不支援 HTML5 影片。
-                </video>
-            </div>
-            <div id="resultView" class="col-lg-5 pb-3">
-                <h3 class="fw-bold" for="resultViewImg">活動追蹤結果圖表:</h3>
-                <div class="col d-flex justify-content-center">
-                    <img id="resultViewImg" class="d-block align-content-center h-100 w-100 d-none visually-hidden"
-                        style="display:none;min-height: 200px;" src="" alt="結果圖表展示">
+        <div id="resultPreview" class="View col-lg-7 pb-3" style="justify-content: space-between;">
+            <h3 class="fw-bold" for="videoFile">活動追蹤結果影片:</h3>
+            <video id="TrackingVideo" class="d-none visually-hidden" style="display:none;" width="100%" controls>
+                <source id="TrackingSource" type="video/mp4" />您的瀏覽器不支援 HTML5 影片。
+            </video>
+            <!-- 資訊總覽 -->
+            <div id="trackingOverview" class="mt-2 fs-3">
+                <div class="overview-item" id="Frames">
+                    <span class="item-label">幀數:</span>
+                    <span class="value-item" id="Current" style="color:#007BFF">-</span>
+                    /
+                    <span class="value-item" id="Total">-</span>
                 </div>
-            </div>
-            <div id="resultInfo">
-                <!-- 資訊總覽 -->
-                <div id="trackingOverview" class="d-none visually-hidden" style="display: none;">
-                    <div class="overview-item" id="Frames">
-                        <span class="item-label">幀數:</span>
-                        <span class="value-item" id="Current">-</span>/<span class="value-item" id="Total">-</span>
-                    </div>
-                    <div class="overview-item" id="RecordId">
-                        <span class="item-label">記錄編號:</span>
-                        <span class="value-item">-</span>
-                    </div>
-                    <div class="overview-item" id="AverageConfidence">
-                        <span class="item-label">平均信心度:</span>
-                        <span class="value-item">-</span>
-                    </div>
-                    <div class="overview-item" id="ModelVersion">
-                        <span class="item-label">模型版本:</span>
-                        <span class="value-item">-</span>
-                    </div>
-                    <div class="overview-item" id="DateTime">
-                        <span class="item-label">辨識日期:</span>
-                        <span class="value-item">-</span>
-                    </div>
+                <div class="overview-item" id="AverageConfidence">
+                    <span class="item-label">平均信心度:</span>
+                    <span class="value-item">-</span>
                 </div>
-                <!-- 即時數據 -->
-                <div id="realTimeData" class="d-none visually-hidden" style="display: none;">
-                    <div class="scrollable-container">
-                        <div class="sticky-column">
-                            <div class="item">豬隻(ID)</div>
-                            <div class="item">活動量(cm)</div>
-                            <div class="item">進食(次)</div>
-                            <div class="item">飲水(次)</div>
-                            <div class="item">待角落(次)</div>
-                            <div class="item">進食(幀)</div>
-                            <div class="item">飲水(幀)</div>
-                            <div class="item">待角落(幀)</div>
-                        </div>
-                    </div>
+                <div class="overview-item" id="ModelVersion">
+                    <span class="item-label">模型版本:</span>
+                    <span class="value-item">-</span>
+                </div>
+                <div class="overview-item" id="RecordId">
+                    <span class="item-label">記錄編號:</span>
+                    <span class="value-item">-</span>
+                </div>
+                <div class="overview-item" id="DateTime">
+                    <span class="item-label">辨識日期:</span>
+                    <span class="value-item">-</span>
                 </div>
                 <style>
                     #trackingOverview {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 10px;
+                        display: flex !important;
+                        flex-wrap: wrap;
+                        flex-direction: row;
+                        white-space: nowrap;
+                        gap: 1rem;
                     }
 
                     .overview-item {
-                        display: flex;
-                        align-items: center;
+                        padding: 0 5px;
                     }
 
                     .item-label {
@@ -134,40 +110,81 @@
                     .value-item {
                         font-weight: normal;
                     }
-
+                </style>
+            </div>
+        </div>
+        <div class="View col-lg-5 pb-3">
+            <div class="form-group d-flex align-items-center mb-2" style="white-space: nowrap;">
+                <h3 class="fw-bold m-0" for="resultViewImg">追蹤數據:</h3>
+                <select id="resultSelect" class="form-control" onchange="displayMode(this)">
+                    <option value="resultInfo">豬隻活動統計表</option>
+                    <option value="resultView">結果圖表</option>
+                </select>
+            </div>
+            <div id="resultView" class="DisplayMode">
+                <div class="col d-flex justify-content-center">
+                    <img id="resultViewImg" class="d-block align-content-center h-100 w-100"
+                        style="display:none;min-height: 200px;" src="" alt="結果圖表展示">
+                </div>
+            </div>
+            <div id="resultInfo" class="DisplayMode" style="overflow: hidden;">
+                <!-- 即時數據 -->
+                <div id="realTimeData">
+                    <div class="sticky-column" style="padding-right: 12px;">
+                        <div class="item">豬隻(ID)</div>
+                        <div class="item">活動量(cm)</div>
+                        <div class="item">進食(次)</div>
+                        <div class="item">飲水(次)</div>
+                        <div class="item">待角落(次)</div>
+                        <div class="item">進食(幀)</div>
+                        <div class="item">飲水(幀)</div>
+                        <div class="item">待角落(幀)</div>
+                    </div>
+                    <div class="scrollable-container">
+                    </div>
+                </div>
+                <style>
                     #realTimeData {
-                        margin-top: 10px;
-                        border: 1px solid #ddd;
-                        border-radius: 5px;
-                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                        display: flex;
-                        /* flex-wrap: wrap;
-              gap: 10px; */
+                        display: flex !important;
+                        flex-direction: column;
+                        overflow: hidden;
+                        height: 100%;
                     }
 
                     .scrollable-container {
-                        display: flex;
-                        overflow-x: auto;
                         /* 啟用水平滾動 */
+                        @* display: flex; *@
+                        overflow-x: auto;
+                        /* 啟用垂直滾動 */
+                        overflow-y: auto;
                     }
 
                     .sticky-column {
                         position: sticky;
+                        background-color: #fff;
+                        /* 確保固定項目不會被卡片覆蓋 */
+                        z-index: 1;
+                        @* border-right: 1px solid #ddd;
+                        /* 禁止文字換行 */
+                        white-space: nowrap;
                         /* 固定左側欄 */
                         left: 0;
-                        background-color: #fff;
-                        z-index: 1;
-                        /* 確保固定項目不會被卡片覆蓋 */
-                        border-right: 1px solid #ddd;
-                        padding: 0 10px;
-                        white-space: nowrap;
-                        /* 禁止文字換行 */
+                        padding: 0 10px; *@
+                        display: flex;
+                        top: 0;
+                        padding: 5px 0;
+                        gap: 10px;
+                    }
+
+                    .item{
+                        width: 55px;
+                        text-align: center;
                     }
 
                     .sticky-column .item {
                         font-weight: bold;
                         padding: 5px 0;
-                        text-align: right;
+                        @* text-align: right; *@
                     }
 
                     .card-container {
@@ -179,11 +196,12 @@
 
                     .pig-card {
                         display: flex;
-                        flex-direction: column;
+                        flex-direction: row;
+                        @* flex-direction: column; *@
                         gap: 10px;
                         /* 每行數據的間距 */
                         min-width: 50px;
-                        padding: 5px;
+                        padding: 5px 0;
                         text-align: center;
                         color: #007BFF;
                         background-color: #f4f4f4;
@@ -196,27 +214,62 @@
                     }
                 </style>
             </div>
+            <style>
+                .DisplayMode {
+                    display: none;
+                }
+
+                .DisplayMode.active {
+                    display: block;
+                }
+
+                #resultInfo{
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+            </style>
+            <script>
+                function displayMode(select) {
+                    let results = document.querySelectorAll('#resultView, #resultInfo');
+                    results.forEach(img => img.classList.remove('active'));
+                    let selectedDisplayMode = document.querySelector(`#${select.value}`);
+                    if (selectedDisplayMode) selectedDisplayMode.classList.add('active');
+                }
+                // 頁面加載時初始化顯示圖表
+                document.addEventListener('DOMContentLoaded', function () {
+                    const defaultSelect = document.querySelector('#resultSelect');
+                    if (defaultSelect) displayMode(defaultSelect);
+                });
+            </script>
         </div>
-
-
-        <!-- @* 錯誤提示文字 *@ -->
-        <div id="msg" class="text-center fs-3" style="color:red;"></div>
-
-        <!-- @* 方法載入 *@ -->
-        <script type="module">
-            const errorMsg = document.getElementById("msg");
-            const Views = {
-                source: document.querySelector("#sourcePreview"),
-                target: document.querySelector("#resultPreview"),
-                result: document.querySelector("#resultView"),
-                prefix: document.querySelector("#Condition_Selection_Step"),
-                suffix: document.querySelector("#Result_Record_Show_Step"),
-            };
-            import * as Service from '@Url.Content("~/js/Services.js")';
-            await Service.initialize("TRACKING", Views, errorMsg); // 初始化載入必要資訊
-            window.setCondition = Service.setConditionQuery;
-            Service.RecordParam() ?? (window.confirm = () => { Service.ServiceModeExcute() });
-        </script>
-
+        <style>
+            .View{
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+        </style>
     </div>
+
+
+    <!-- @* 錯誤提示文字 *@ -->
+    <div id="msg" class="text-center fs-3" style="color:red;"></div>
+
+    <!-- @* 方法載入 *@ -->
+    <script type="module">
+        const errorMsg = document.getElementById("msg");
+        const Views = {
+            source: document.querySelector("#sourcePreview"),
+            target: document.querySelector("#resultPreview"),
+            result: document.querySelector("#resultView"),
+            prefix: document.querySelector("#Condition_Selection_Step"),
+            suffix: document.querySelector("#Result_Record_Show_Step"),
+        };
+        import * as Service from '@Url.Content("~/js/Services.js")';
+        await Service.initialize("TRACKING", Views, errorMsg); // 初始化載入必要資訊
+        window.setCondition = Service.setConditionQuery;
+        setCondition();
+        Service.RecordParam() ?? (window.confirm = () => Service.ServiceModeExcute());
+    </script>
 </section>

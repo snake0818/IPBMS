@@ -83,7 +83,7 @@ export async function ServiceModeExcute() {
 
 // 設置前置條件清單
 export function setConditionQuery() {
-  console.log('exc')
+  console.log('setting condition query.')
   const mode = prefix.querySelector(".mode");
   if (!mode) { console.error("條件選擇的類型未選擇或不存在!"); return; }
   const modeId = mode.id;
@@ -93,9 +93,11 @@ export function setConditionQuery() {
   else if (modeId === 'search' && RecordList) { dataList = RecordList; }
   else { console.error("條件選擇的類型未選擇或不存在!"); return; }
 
-  optionsHTML = dataList
-    .map(item => createOptionHTML(item, modeId === 'select', MediaType === 'IMAGE'))
-    .join('');
+  optionsHTML = dataList.length > 0
+    ? dataList
+      .map(item => createOptionHTML(item, modeId === 'select', MediaType === 'IMAGE'))
+      .join('')
+    : '<div class="no-data no-select">無資料</div>';
   setOptionList(modeId, optionsHTML);
 }
 
@@ -103,7 +105,7 @@ export function setConditionQuery() {
 function createOptionHTML(item, isSelectMod = false, isImage = false) {
   const isImageSelectMod = isSelectMod && isImage
   const MID = item.id;
-  const OptionInfo = isSelectMod ? item.fileName : item.timestamp;
+  const OptionInfo = isSelectMod ? item.fileName : `紀錄編號:${MID} (${formattedDate(item.timestamp)})`;
   const MediaURL = isImageSelectMod ? `${API_URL}/Media/Image/${MID}` : null;
   return `
     <div class="option-item" data-value="${MID}">
@@ -118,4 +120,15 @@ function setOptionList(mode, optionsHTML) {
   const optionList = prefix.querySelector(`#${mode} .select-options`);
   if (optionList) { optionList.innerHTML = optionsHTML; }
   else { console.error("選項列表元素不存在!"); }
+}
+
+const formattedDate = (timestamp) => {
+  const date = new Date(timestamp); // 秒轉毫秒
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${year}/${month}/${day}-${hours}:${minutes}:${seconds}`;
 }

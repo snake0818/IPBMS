@@ -3,7 +3,10 @@
         <div id="nav-content" class="text-center">
             <ul id="nav-list" class="nav-list">
                 <li id="nav-title">
-                    <a class="nav-link fw-bold" asp-area="" asp-controller="Page" asp-action="Index">IBMS</a>
+                    <a class="nav-link fw-bold" asp-area="" asp-controller="Page" asp-action="Index">
+                        <div class="icon"> <img src="~/pig.svg"> </div>
+                        IBMS
+                    </a>
                 </li>
                 <!-- 展示 -->
                 <li id="nav-menu">
@@ -23,15 +26,15 @@
                                             <ul class="nav-submenu-list">
                                                 <li class="nav-submenu-item" style="--var-item-number: 2">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">研究過程</a>
+                                                        asp-action="SystemDesign">系統設計</a>
                                                 </li>
                                                 <li class="nav-submenu-item" style="--var-item-number: 3">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">系統設計</a>
+                                                        asp-action="ResearchProcess">研究過程</a>
                                                 </li>
                                                 <li class="nav-submenu-item" style="--var-item-number: 4">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">研究結論</a>
+                                                        asp-action="ResearchResult">研究結論</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -41,19 +44,14 @@
                                             <ul class="nav-submenu-list">
                                                 <li class="nav-submenu-item" style="--var-item-number: 7">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">參考文獻</a>
+                                                        asp-action="Papers">參考文獻</a>
                                                 </li>
                                                 <li class="nav-submenu-item" style="--var-item-number: 8">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">開發工具</a>
+                                                        asp-action="DevTools">開發工具</a>
                                                 </li>
                                                 <li class="nav-submenu-item" style="--var-item-number: 9">
-                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">分工與進度</a>
-                                                </li>
-                                                <li class="nav-submenu-item" style="--var-item-number: 10">
-                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
-                                                        asp-action="ToBeContinue">GitHub</a>
+                                                    <a class="nav-submenu-link" href="https://github.com/snake0818/IPBMS">GitHub</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -68,7 +66,7 @@
                                     <a class="nav-link">服務</a>
                                 </li>
                             </ul>
-                            <div id="nav-submenu-service" class="nav-submenu" style="--var-item-total: 4">
+                            <div id="nav-submenu-service" class="nav-submenu" style="--var-item-total: 5">
                                 <div class="nav-submenu-container">
                                     <div class="nav-submenu-content">
                                         <div class="nav-submenu-group-main">
@@ -81,6 +79,10 @@
                                                 <li class="nav-submenu-item" style="--var-item-number: 3">
                                                     <a class="nav-submenu-link" asp-area="" asp-controller="Page"
                                                         asp-action="Tracking">豬隻活動追蹤</a>
+                                                </li>
+                                                <li class="nav-submenu-item" style="--var-item-number: 4">
+                                                    <a class="nav-submenu-link" asp-area="" asp-controller="Page"
+                                                        asp-action="DigitalTwin">數位孿生</a>
                                                 </li>
                                             </ul>
                                         </div>

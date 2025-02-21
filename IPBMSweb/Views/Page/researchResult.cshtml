@@ -1,0 +1,92 @@
+@{
+    var pageName = "研究結論";
+    ViewData["Title"] = pageName;
+}
+
+<section>
+    <div class="PartTitle">開發時面臨的挑戰與克服方法</div>
+    <p>在本專題開發過程中，我們遇到了多項挑戰，無論是技術實現還是團隊協作方面，都需要不斷努力克服，以下是我們在面對這些挑戰時的具體克服方法:</p>
+    <div class="part">
+        <div class="part-title">豬隻身長估測</div>
+        <div class="part-sub-title">(1) 因拍攝角度差異導致身長估測誤差</div>
+        <div class="part-text">透過標定物進行等比運算，動態調整角度變化以提高估測準確性。</div>
+        <div class="part-sub-title">(2) 對於有髒汙的豬隻圖片</div>
+        <div class="part-text">對相關圖片進行更多前處理，提升資料集的多樣性，幫助模型更好應對此類情況。</div>
+    </div>
+    <div class="part">
+        <div class="part-title">豬隻行為活動偵測與追蹤</div>
+        <div class="part-sub-title">(1) 對於豬隻遮擋問題</div>
+        <div class="part-text">增加遮擋情況下的資料集，提升模型在處理這類裝況時的穩定性，減少ID浮動的問題。</div>
+        <div class="part-sub-title">(2) 為了全面了解豬隻行為</div>
+        <div class="part-text">新增了飲食與角落逗留行為來補強行為分析，提高健康狀況的準確度，同時，有助於更全面地了解豬隻的行為特徵。</div>
+        <div class="part-text">這些改進使得我們的系統在健康監控方面變得更加精確和可靠。</div>
+    </div>
+    <div class="part">
+        <div class="part-title">雲端網頁平台</div>
+        <div class="part-text">針對影像串流的問題。我們使用MPEG編碼與SSE (Server-Sent Events) 技術實現了即時顯示。</div>
+    </div>
+</section>
+<section>
+    <div class="PartTitle">未來展望與改善</div>
+    <p>為提升系統的精準度與功能，以應對養豬業日益增長的需求，未來計劃如下：</p>
+    <div class="part">
+        <div class="part-title">豬隻身長估測</div>
+        <div class="part-text">拓展到多豬隻身長估測，提升整體豬群健康監控與預測精度。</div>
+        <div class="part-text">改善資料集，增加多角度拍攝資料，提高模型泛化能力，減少角度所帶來的偏差。</div>
+        <div class="part-text">解決影像深度問題，探索立體視覺技術或其他影像處理方法，適應更多拍攝條件與環境。</div>
+    </div>
+    <div class="part">
+        <div class="part-title">豬隻行為活動偵測與追蹤</div>
+        <div class="part-text">提高即時追蹤與辨識效率，優化模型執行流程，縮短反應時間。</div>
+        <div class="part-text">擴充資料集，加入更多環境、光線及豬隻互動情境，提升模型適應能力。</div>
+        <div class="part-text">生成活動軌跡，深入分析追蹤問題如密集區域與重疊現象，提升系統穩定性及數據價值。</div>
+    </div>
+    <div class="part">
+        <div class="part-title">雲端網頁平台</div>
+        <div class="part-text">新增數位孿生功能，實現豬隻與環境的數位化映射，優化養殖管理與決策。</div>
+        <div class="part-text">結合VR技術，提升互動體驗，提供行為視覺化與動態追蹤新應用場景。</div>
+        <div class="part-text">開發基於LLM的智慧養殖平台，提供養殖指標、健康狀況及生長數據等資訊。</div>
+        <div class="part-text">開發手機App，便於隨時監控豬隻活動、查詢數據與即時管理。</div>
+        <div class="part-text">採用容器化技術（如Kubernetes），提升系統擴展性、穩定性與運行效率，確保高可用性。</div>
+    </div>
+</section>
+<section>
+    <div class="PartTitle">專題總結</div>
+    <div class="part-text">本專題成功展示了將人工智慧視覺技術應用於畜牧業的價值與可行性，提供了關鍵數據如活動量、飲食行為、身長等，有效地解決了人力不足的問題，推動智慧化養殖發展。</div>
+    <div class="part-text">開發過程中，團隊獲得了豐富的經驗，為未來優化與功能提升奠定了基礎。同時也為智能化養殖領域的進一步突破提供了重要參考。
+    </div>
+</section>
+<style>
+    section{
+        margin-top: 22px;
+        margin-bottom: 22px;
+    }
+    .PartTitle {
+        font-size: calc(2.5rem);
+        font-weight: bolder;
+        text-align: center;
+        word-wrap: break-word;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .part {
+        margin-bottom: 1rem;
+        margin-left: 1.5rem;
+    }
+
+    .part-title {
+        margin-left: -1.5rem;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .part-sub-title {
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    .part-text {
+        font-size: 24px;
+    }
+</style>

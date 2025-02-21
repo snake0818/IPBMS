@@ -1,0 +1,132 @@
+@{
+    var pageName = "開發工具";
+    ViewData["Title"] = pageName;
+}
+
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>YOLO v11</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-YOLO.jpg"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>roboflow</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-roboflow.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>PyCharm</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-PyCharm.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>Microsoft Visual Studio</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-VS.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>Microsoft SQL Server</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-SSMS.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>OpenCV</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-OpenCV.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>CV Zone</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-CV Zone.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>ASP.Net Core 8</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-ASP.NetCore.jpg"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>REST API</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-REST API.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>Flask</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-Flask.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>Server-sent Event</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-SSE.png"></div>
+</section>
+<section class="DevDisplay">
+    <div class="DevText">
+        <h1>html、css、javascript</h1>
+    </div>
+    <div class="DevImage"><img src="~/image/logo-Web.png"></div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                } else {
+                    entry.target.classList.remove("is-visible");
+                }
+            });
+        });
+        const elements = document.querySelectorAll(".DevDisplay");
+        elements.forEach((el) => observer.observe(el)); // 觀察所有指定類別的元素
+    });
+</script>
+<style>
+    .DevDisplay {
+        padding: 4rem 0;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    .DevDisplay.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .DevText {
+        margin: 2rem 0;
+    }
+
+    .DevDisplay:nth-child(odd) .DevText {
+        text-align: left;
+    }
+
+    .DevDisplay:nth-child(even) .DevText {
+        text-align: right;
+    }
+
+    .DevImage {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .DevImage img {
+        width: auto;
+        height: auto;
+        max-height: 75vh;
+        max-width: 80%;
+        object-fit: contain;
+    }
+</style>

@@ -12,8 +12,24 @@ onSharedElementsUpdated((sharedElements) => {
 
 // ********** 豬隻身長估測服務 ********** //
 
-export async function getEstimateMediaList() { return await sLib.getResponse(`${sLib.API_URL}/Media/Image/List`); }
-export async function getEstimateRecordList() { return await sLib.getResponse(`${sLib.API_URL}/Estimate/List`); }
+export async function getEstimateMediaList() {
+  try {
+    return await sLib.getResponse(`${sLib.API_URL}/Media/Image/List`);
+  } catch (error) {
+    if (error.message.includes('404')) console.warn('無資料');
+    else if (error.message.includes('500')) console.warn('無法取得資料');
+    return [];
+  }
+}
+export async function getEstimateRecordList() {
+  try {
+    return await sLib.getResponse(`${sLib.API_URL}/Estimate/List`);
+  } catch (error) {
+    if (error.message.includes('404')) console.warn('無資料');
+    else if (error.message.includes('500')) console.warn('無法取得資料');
+    return [];
+  }
+}
 
 // 圖片估測服務流程
 export async function EstimateExcute(imageId) {
@@ -21,6 +37,7 @@ export async function EstimateExcute(imageId) {
   try {
     switchAndWaittingResults();
 
+    sLib.updateWaittingMessage(suffix, '正在辨識圖片，請稍候...');
     const recordId = await sLib.excuteService(`${sLib.API_URL}/Estimate/${imageId}`);
     sLib.addParam('recordId', recordId); // 賦予記錄
     if (!recordId) {

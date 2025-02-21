@@ -40,3 +40,11 @@
   max-width: 450px;
   width: 100%;
 }
+
+.no-data.no-select{
+  padding: 10px;
+  text-align: center;
+  pointer-events: none;
+  cursor: default;
+  color: #888;
+}

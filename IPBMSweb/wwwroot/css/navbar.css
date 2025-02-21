@@ -1,7 +1,27 @@
-:root{
+:root {
   --nav-width: 755px;
   --nav-height: 44px;
+  --nav-background-color: 178, 95, 86;
+  --nav-mask-color: rgba(var(--nav-background-color), 0.4);
+  --nav-mask-filter: blur(30px);
+  --nav-font-size-default: 14px;
+  --nav-font-size1: 20px;
+  --nav-font-color1: #ffb600;
+  --nav-font-color2: #f54f51;
+  --nav-font-color3: #F5F5F5;
+  --nav-font-color4: #222D59;
+
   --nav-submenu-height: 300px;
+  --nav-submenu-font-size1: 26px;
+  --nav-submenu-font-size2: 22px;
+  --nav-submenu-font-size3: 20px;
+  --nav-submenu-font-size4: 16px;
+  --nav-submenu-font-color1: #33d6b2;
+
+  --nav-animation-delay1: 80ms;
+  --nav-animation-delay2: 20ms;
+  --nav-animation-duration: 0.32s;
+  --nav-submenu-animation-duration: 0.5s;
 }
 
 #header {
@@ -18,9 +38,10 @@
   padding: 0;
   width: 100%;
   max-height: var(--nav-height);
-  background: rgba(240, 240, 240, .99);
+  background: rgba(var(--nav-background-color), 0.92);
   backdrop-filter: none;
   position: fixed;
+  font-size: var(--nav-font-size-default);
 }
 
 #nav-content {
@@ -41,7 +62,6 @@
   justify-content: space-between;
   user-select: none;
   list-style: none;
-
 }
 
 .nav-link {
@@ -56,9 +76,9 @@
 
 /* 模糊背景 */
 .nav-curtain {
-  background: rgba(232, 232, 232, .4);
-  -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px);
+  background: var(--nav-mask-color);
+  -webkit-backdrop-filter: var(--nav-mask-filter);
+  backdrop-filter: var(--nav-mask-filter);
   visibility: hidden;
   position: fixed;
   opacity: 0;
@@ -69,13 +89,19 @@
   width: 100%;
   height: 100%;
   z-index: 998;
-  transition: opacity .32s cubic-bezier(.4, 0, .6, 1) 80ms, visibility .32s step-end 80ms;
+  transition: opacity var(--nav-animation-duration) cubic-bezier(0.4, 0, 0.6, 1)
+      var(--nav-animation-delay1),
+    visibility var(--nav-animation-duration) step-end
+      var(--nav-animation-delay1);
 }
 
-#nav.nav-curtain-open~.nav-curtain {
+#nav.nav-curtain-open ~ .nav-curtain {
   opacity: 1;
   visibility: visible;
-  transition: opacity .32s cubic-bezier(.4, 0, .6, 1) 80ms, visibility .32s step-start 80ms
+  transition: opacity var(--nav-animation-duration) cubic-bezier(0.4, 0, 0.6, 1)
+      var(--nav-animation-delay1),
+    visibility var(--nav-animation-duration) step-start
+      var(--nav-animation-delay1);
 }
 
 /* 導覽列選單 */
@@ -94,28 +120,37 @@
 }
 
 #nav #nav-menu .nav-item-text {
-  color: rgba(0, 0, 0, .5) !important;
-  font-size: 16px;
+  color: var(--nav-font-color1);
+  font-size: var(--nav-font-size1);
   font-weight: bold;
 }
 
-#nav #nav-content #nav-title,
-#nav .nav-item a:hover,
+#nav #nav-content #nav-title {
+  color: var(--nav-font-color1);
+  font-size: xx-large;
+}
+
 #nav .nav-item.active a.nav-link,
-.nav-submenu-link:hover {
-  color: rgba(0, 0, 0, 1);
+.nav-submenu-item:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 6px; /* 柔和邊界 */
+  transition: all 0.3s ease; /* 增加過渡效果 */
+}
+
+#nav .nav-item.active a.nav-link {
+  color: var(--nav-font-color2);
 }
 
 /* 導覽列副選單 */
 .nav-submenu {
-  background: #fff;
+  background: rgba(var(--nav-background-color), 1);
   overflow: hidden;
   visibility: hidden;
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  height: 44px;
+  height: var(--nav-height);
   text-align: start;
 }
 
@@ -123,7 +158,7 @@
   left: 0;
   right: 0;
   margin-top: var(--nav-height);
-  padding-top: -44px;
+  padding-top: calc(- var(--nav-height));
   max-height: calc(100% - var(--nav-height));
   overflow-y: auto;
   height: 100%;
@@ -131,7 +166,7 @@
 
 .nav-submenu-content {
   margin: 0 auto;
-  padding: 22px;
+  padding: calc(var(--nav-height) / 2);
   width: 100%;
   max-width: var(--nav-width);
   display: flex;
@@ -144,7 +179,10 @@
 
 #nav.nav-animating .nav-item.active .nav-submenu,
 #nav.nav-animating.nav-submenu-closing .nav-submenu {
-  transition: height .5s ease 80ms, visibility .5s ease 80ms;
+  transition: height var(--nav-submenu-animation-duration) ease
+      var(--nav-animation-delay1),
+    visibility var(--nav-submenu-animation-duration) ease
+      var(--nav-animation-delay1);
 }
 
 #nav.nav-submenu-open .nav-item.active .nav-submenu {
@@ -154,43 +192,60 @@
 /* 導覽列項目集合 */
 .nav-submenu-group-main {
   position: relative;
-  padding-inline-end: 88px;
+  padding-inline-end: calc(1.25 * var(--nav-height));
+  color: var(--nav-submenu-font-color1);
+}
+
+.nav-submenu-group-main .nav-submenu-header {
+  font-size: var(--nav-submenu-font-size1);
 }
 
 .nav-submenu-group-main ul.nav-submenu-list {
-  font-size: 24px;
+  font-size: var(--nav-submenu-font-size2);
 }
 
 .nav-submenu-group {
   position: relative;
-  padding-inline-end: 44px;
+  padding-inline-end: calc(0.5 * var(--nav-height));
+  color: var(--nav-submenu-font-color1);
+}
+
+.nav-submenu-group .nav-submenu-header {
+  font-size: var(--nav-submenu-font-size3);
 }
 
 .nav-submenu-group ul.nav-submenu-list {
-  font-size: 16px;
+  font-size: var(--nav-submenu-font-size4);
 }
 
-.nav-submenu-header {
-  font-size: 12px;
-  font-weight: bold;
-  color: #6E6E73;
-}
-
+.nav-submenu-header,
 .nav-submenu-list {
-  margin-top: 10px;
   font-weight: bold;
-  color: #333336;
 }
-.nav-submenu-link{
-  color: rgba(0, 0, 0, .8);
+
+.nav-submenu-link {
+  color: var(--nav-font-color3);
+}
+.nav-submenu-item:hover .nav-submenu-link {
+  color: var(--nav-font-color4);
+}
+
+.nav-submenu-item {
+  padding: 0 calc(0.2 * var(--nav-height));
 }
 
 .nav-submenu-item,
 .nav-submenu-header {
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(calc(0.1 * var(--nav-height)));
   transition-property: opacity, transform;
-  transition-duration: min(.16s + 20ms* calc(var(--var-item-total) - var(--var-item-number)), .24s);
+  transition-duration: min(
+    calc(
+      0.5 * var(--nav-animation-duration) + var(--nav-animation-delay2) *
+        (var(--var-item-total) - var(--var-item-number))
+    ),
+    calc(0.75 * var(--nav-animation-duration))
+  );
   transition-delay: 0s;
 }
 
@@ -198,6 +253,9 @@
 .nav-item.active .nav-submenu-header {
   opacity: 1;
   transform: translateY(0);
-  transition-duration: .32s;
-  transition-delay: calc(160ms + var(--var-item-number)* 20ms);
+  transition-duration: calc(0.75 * var(--nav-animation-duration));
+  transition-delay: calc(
+    2 * var(--nav-animation-delay2) + var(--var-item-number) *
+      var(--nav-animation-delay2)
+  );
 }

@@ -1,0 +1,133 @@
+@{
+  var pageName = "系統設計";
+  ViewData["Title"] = pageName;
+}
+
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>系統架構</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/System.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>API 規劃 - Media</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/API-Media.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>API 規劃 - Tracking</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/API-Tracking.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>API 規劃 - Estimate</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/API-Estimate.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>API 規劃 - Pig</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/API-Pig.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>API 規劃 - Model Service</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/API-Model Service.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>實體關聯圖</h1>
+    <h5>（Entity Relationship Diagram，簡稱ERD）</h5>
+  </div>
+  <div class="DesignImage"><img src="~/image/Er.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>豬隻大小估測執行</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/EstimateExcute.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>豬隻大小估測記錄查詢</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/EstimateRecord.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>豬隻大小估測結果展示</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/EstimateRecordViewSD.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>豬隻活動追蹤執行</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/TrackingExcute.png"></div>
+</section>
+<section class="DesignDisplay">
+  <div class="DesignText">
+    <h1>豬隻活動追蹤記錄查詢</h1>
+  </div>
+  <div class="DesignImage"><img src="~/image/TrackingRecord.png"></div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+        } else {
+          entry.target.classList.remove("is-visible");
+        }
+      });
+    });
+    const elements = document.querySelectorAll(".DesignDisplay");
+    elements.forEach((el) => observer.observe(el)); // 觀察所有 .DesignDisplay 元素
+  });
+</script>
+<style>
+  .DesignDisplay {
+    padding: 4rem 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .DesignDisplay.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .DesignText {
+    margin: 2rem 0;
+  }
+
+  .DesignDisplay:nth-child(odd) .DesignText {
+    text-align: left;
+  }
+
+  .DesignDisplay:nth-child(even) .DesignText {
+    text-align: right;
+  }
+
+  .DesignImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .DesignImage img {
+    width: auto;
+    height: auto;
+    max-height: 75vh;
+    max-width: 80%;
+    object-fit: contain;
+  }
+</style>
