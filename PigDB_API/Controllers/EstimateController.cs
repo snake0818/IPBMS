@@ -91,7 +91,7 @@ namespace PigDB_API.Controllers
             try
             {
                 var record = await _context.EstimateRecords
-                    .Select(r => new { r.Id, r.ImageId, })
+                    .Select(r => new { r.Id, r.ImageId, r.Timestamp })
                     .FirstOrDefaultAsync(r => r.Id == Record_id);
                 if (record == null) return NotFound("該估測結果紀錄不存在!");
                 return Ok(record);
